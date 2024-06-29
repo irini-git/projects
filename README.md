@@ -1,5 +1,8 @@
 # Projects
 
+**NLP_01_Minimum_Edit_distance**<br>
+Minimum Edit distance : calculate min edit distance between two words.
+
 **NLP 01 SMS Spam Classifier**<br>
 Spam or not spam : classify SMS messages using Naive Bayes.
 
