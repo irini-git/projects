@@ -1,0 +1,8 @@
+# Projects
+
+**NLP 01 SMS Spam Classifier**<br>
+Spam or not spam : classify SMS messages using Naive Bayes.
+
+**NLP 01 Type Token Ratio**<br>
+Lexical variety within a text : calculate type-token ratio.
+
