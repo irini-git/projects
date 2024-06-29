@@ -1,6 +1,6 @@
 # Projects
 
-**NLP_01_Minimum_Edit_distance**<br>
+**NLP 01 Minimum Edit distance**<br>
 Minimum Edit distance : calculate min edit distance between two words.
 
 **NLP 01 SMS Spam Classifier**<br>
