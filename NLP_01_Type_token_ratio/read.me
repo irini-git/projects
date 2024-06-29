@@ -1,0 +1,26 @@
+Purpose
+In this project we calculate type-token ratio for a collection of books.
+Main features of the project:
+
+- load data : from text file.
+
+- preprocess data : 
+remove non-ascii symbols, digits and currencies, underscores, Latin numerals 
+normalize text (convert to lower case)
+tokenize text (using split)
+remove stop words (using nltk.corpus.stopwords.words)
+
+- calculate type-token ratio : using Counter and save output to file
+- graph : plot type-token ratio.
+
+What are types and tokens
+type - a unique word (an entry in the vocabulary or dictionary), count unique words
+token - an instance of a type in a corpus, number of words in a sentence.
+Ex. "He who loses wealth loses much; he who loses a friend loses more; but he that loses his courage loses all", by Miguel de Cervantes.
+- type count (13)
+- token count (21)
+Useful stats : type / token ratio = 13/21 = 0.62.
+
+
+Important :
+pip install -U kaleido
