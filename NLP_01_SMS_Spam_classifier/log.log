@@ -1,19 +1,19 @@
-2024-06-29 14:57:12,343 - INFO - Data size : (5572, 2)
+2024-06-29 18:22:36,084 - INFO - Data size : (5572, 2)
 
-2024-06-29 14:57:12,540 - INFO - Value counts : 
+2024-06-29 18:22:36,118 - INFO - Value counts : 
 label
 0    4825
 1     747
 Name: count, dtype: int64
 
-2024-06-29 14:57:12,598 - INFO - % of spam : 13
+2024-06-29 18:22:36,146 - INFO - % of spam : 13
 
-2024-06-29 14:57:12,948 - INFO - Number of rows in the total set: 5572
-2024-06-29 14:57:12,949 - INFO - Number of rows in the training set: 3900
-2024-06-29 14:57:12,949 - INFO - Number of rows in the test set: 1672
-2024-06-29 14:58:17,609 - INFO - Naive Bayes classifier for multinomial models (MultinomialNB)
-2024-06-29 14:58:18,553 - INFO - Accuracy: 98.21 %
-2024-06-29 14:58:18,554 - INFO - Balanced accuracy: 95.71 %
-2024-06-29 14:58:18,554 - INFO - Precision: 94.01 %
-2024-06-29 14:58:18,560 - INFO - Confusion Matrix: [[1438   13]
- [  17  204]]
+2024-06-29 18:22:36,511 - INFO - Number of rows in the total set: 5572
+2024-06-29 18:22:36,511 - INFO - Number of rows in the training set: 3900
+2024-06-29 18:22:36,512 - INFO - Number of rows in the test set: 1672
+2024-06-29 18:22:42,200 - INFO - Complement Naive Bayes classifier (ComplementNB)
+2024-06-29 18:22:42,616 - INFO - Accuracy: 96.83 %
+2024-06-29 18:22:42,616 - INFO - Balanced accuracy: 95.49 %
+2024-06-29 18:22:42,616 - INFO - Precision: 84.15 %
+2024-06-29 18:22:42,621 - INFO - Confusion Matrix: [[1412   39]
+ [  14  207]]
