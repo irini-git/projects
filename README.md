@@ -1,5 +1,8 @@
 # Projects
 
+**NLP_01_Bigram_mini_corpus**<br>
+Bigram model to predict the conditional probability of the next word for French nurse.
+
 **NLP 01 Minimum Edit distance**<br>
 Minimum Edit distance : calculate min edit distance between two words.
 
