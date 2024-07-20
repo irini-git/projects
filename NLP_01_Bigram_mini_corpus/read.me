@@ -1,0 +1,47 @@
+-- Idea
+Use a bigram model to predict the conditional probability of the next word for French nurse.
+
+-- Background
+We can generalize the bigram (which looks one word into the past) n-gram to the trigram (which looks two words into the past) and thus to the n-gram (which
+looks n−1 words into the past).
+The bigram model approximates the probability of a word given all the previous words P(wn|w1:n−1)
+by using only the conditional probability of the preceding word P(wn|wn−1).
+
+In other words, for the quote "Real knowledge is to know the extent of one's ignorance," by Confucius
+instead of computing the probability of P(ignorance|Real knowledge is to know the extent of one's)
+we compute P(ignorance|one's).
+
+To estimate probabilities we use maximum likelihood estimation (MLE) :
+- get counts from a corpus, and
+- normalize the counts so that they lie between 0 and 1.
+
+For bigram model : P(wn|wn−1) = C(wn−1wn)/ C(wn−1), where
+C(wn−1wn) - bigram probability of a word wn given a previous word wn−1
+C(wn−1) - sum of all the bigrams that share the same first word wn−1
+
+-- Example
+In the current project we use a mini corpus, a French nursery also known in English as "Brother John"
+
+    Frère Jacques, Frère Jacques,
+    dormez-vous ? Dormez-vous ?
+    Sonnez les matines ! Sonnez les matines !
+    Ding, Dang, Dong.
+    Ding, Dang, Dong.
+
+-- Vocabulary
+Markov assumption : the assumption that the probability of a word depends only on the previous word.
+In general, Markov models are the class of probabilistic models that assume
+we can predict the probability of some future unit without looking too much in the past.
+
+-- References
+Speech and Language Processing by Dan Jurafsky and James H. Martin
+
+
+
+1. Mini corpus
+
+2. The Berkeley Restaurant Project (BeRP) Transcripts
+- remove asterisks *
+- remove what is inside angle brackets
+angle brackets:  used for verbal repairs, to mean that
+   the "correct" parse of the sentence should ignore these words.
