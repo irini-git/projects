@@ -16,6 +16,6 @@ Spam or not spam : classify SMS messages using Naive Bayes.
 Lexical variety within a text : calculate type-token ratio.
 
 ## Naming convention
-Code : NLP for Natural Language Processing
-01 : difficulty of the concept
-Desctiption : high level description
+Code : NLP for Natural Language Processing<br>
+01 : difficulty of the concept<br>
+Desctiption : high level description<br>
