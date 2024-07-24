@@ -1,4 +1,4 @@
-# Projects
+## Projects
 
 **NLP_01_Bigram_BeRP**<br>
 Bigram model to predict the conditional probability using data from The Berkeley Restaurant Project (BeRP).
@@ -15,7 +15,7 @@ Spam or not spam : classify SMS messages using Naive Bayes.
 **NLP 01 Type Token Ratio**<br>
 Lexical variety within a text : calculate type-token ratio.
 
-# Naming convention
+## Naming convention
 Code : NLP for Natural Language Processing
 01 : difficulty of the concept
 Desctiption : high level description
