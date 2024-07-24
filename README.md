@@ -1,9 +1,9 @@
 ## Projects
 
-**NLP_01_Bigram_BeRP**<br>
+**NLP 01 Bigram BeRP**<br>
 Bigram model to predict the conditional probability using data from The Berkeley Restaurant Project (BeRP).
 
-**NLP_01_Bigram_mini_corpus**<br>
+**NLP 01 Bigram mini corpus**<br>
 Bigram model to predict the conditional probability of the next word for French nurse.
 
 **NLP 01 Minimum Edit distance**<br>
