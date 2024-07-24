@@ -15,3 +15,7 @@ Spam or not spam : classify SMS messages using Naive Bayes.
 **NLP 01 Type Token Ratio**<br>
 Lexical variety within a text : calculate type-token ratio.
 
+# Naming convention
+Code : NLP for Natural Language Processing
+01 : difficulty of the concept
+Desctiption : high level description
