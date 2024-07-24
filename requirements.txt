@@ -3,3 +3,12 @@ scikit-learn
 nltk
 plotly
 kaleido
+regex
+scipy
+numpy
+logging
+matplotlib
+pillow
+wordcloud
+altair
+vl-convert-python
