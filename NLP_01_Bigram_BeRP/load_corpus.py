@@ -327,6 +327,8 @@ class BeRP_corpus:
         # Mind to add the words to the subset of df when it is created
         # Potential improvement : how to deal with unknown words UNK
         # - find a known word whose vector in this space is closest to the unknown word using some distance metrics.
+
+        # Potential improvement : promt for input, not hard code new text
         text = "I want chinese"
 
         # Lower case
