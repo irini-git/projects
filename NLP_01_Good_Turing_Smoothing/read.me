@@ -1,1 +1,75 @@
+1. Reminder
+1.1. Add-1 (Laplace) Smoothing
+    P(wi|wi-1)=C(wi-1,wi) + 1 /
+        / C(wi-1) + V
 
+    V - vocabulary
+    C(wi−1,wi) - count of the bigram
+    C(wi-1) - unigram count for word wi-1
+
+1.2. Generalisation
+    Add-k smoothing
+    P(wi|wi-1)=C(wi-1,wi) + k /
+        / C(wi-1) + kV
+    Add-k smoothing requires a method for choosing k; this can be done, for example, by optimizing on a devset.
+
+    or with m = kV
+
+    P(wi|wi-1)=C(wi-1,wi) + m(1/V) /
+        / C(wi-1) + m
+
+    m(1/V) - a constant related to vocabulary size
+
+1.3. Unigram prior
+    P(wi|wi-1)=C(wi-1,wi) + mP(wi) /
+        / C(wi-1) + m
+
+    P(wi) - a function of unigram probability
+
+2. Advanced smoothing algorithms
+Use the count of things we have seen once to estimate the count of things we have never seen.
+
+Nc - frequency of frequency c, how many things occurred with frequency c
+
+Example
+Sam I am I am Sam I do not eat
+unigram counts : I - 3, sam - 2, am - 2, do - 1, not - 1, eat - 1
+
+N1 = 3
+How many things occurred once?
+How many word types occurred once?
+3 : do, not, eat
+
+N2 = 2
+2 : sam, am
+
+N3 = 1
+How many things occurred three times?
+1 : I
+
+3. Good Turing Calculations
+
+P_GT(things with zero frequency) = N1 / N
+
+c* = (c+1) N_c+1 / Nc
+
+3.1. Unseen (bass or catfish)
+c = 0
+MLE p maximum likelihood estimate probability = 0/18 = 0
+
+P_GT(unseen) = N1/N = 3/18
+
+3.2. Seen once (trout)
+c = 1
+MLE p = 1/18
+
+P_GT = 2 * N2/N1 = 2 * 1/3 = 2/3
+
+4. Good Turing complications
+What about words that occur frequently ?
+We cannot always use N + 1
+Solution : after some counts we replace with some estimate (best fit power law)
+
+References
+Good-Turing Smoothing video by Dan Jurafsky
+Speech and Language Processing by Dan Jurafsky and James H. Martin
