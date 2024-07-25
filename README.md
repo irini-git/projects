@@ -6,6 +6,9 @@ Bigram model to predict the conditional probability using data from The Berkeley
 **NLP 01 Bigram mini corpus**<br>
 Bigram model to predict the conditional probability of the next word for French nurse.
 
+**NLP 01 Good-Turing Smoothing**<br>
+Good-Turing smoothing for catch of the day.
+
 **NLP 01 Minimum Edit distance**<br>
 Minimum Edit distance : calculate min edit distance between two words.
 
