@@ -22,3 +22,6 @@ Lexical variety within a text : calculate type-token ratio.
 Code : NLP for Natural Language Processing<br>
 01 : difficulty of the concept<br>
 Desctiption : high level description<br>
+
+## License
+Distributed under the MIT License. See [LICENSE](https://github.com/irini-git/projects/blob/main/LICENSE) for more information.
