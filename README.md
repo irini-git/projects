@@ -1,4 +1,4 @@
-## Projects
+## Natuaral Language Processing - Projects
 
 **NLP 01 Bigram BeRP**<br>
 Bigram model to predict the conditional probability using data from The Berkeley Restaurant Project (BeRP).
