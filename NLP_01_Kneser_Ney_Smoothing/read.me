@@ -1,1 +1,112 @@
+Kneser-Ney Smoothing
+Algorithm used in speech recognition and machine translation.
 
+1.  Consept
+1.1. Absolute Discounting Interpolation
+
+P(wi|wi-1) = ( C(wi-1,wi) - d ) / c(wi-1) +
+    lambda (wi-1) P (w)
+
+Probability of a word given a previous word =
+    = discounted bigram + interpolation weight * unigram probability
+
+1.2. Kneser-Ney Smoothing
+Better estimates for probabilities of lower unigrams.
+Instead of P(w) "how likely is w", we use
+continuation probability P(w) "How likely is w to appear as a novel continuation"
+
+How to measure novel continuation
+- for each word, count the number of bigram types it completes,
+i.e how many bigrams it creates (how many words occur before this word)
+- every bigram type was a novel continuation the first time it was seen
+
+Example :
+a frequent word "Francisco" occurring only in one context "San"
+has a low continuation probability
+
+P(wi|wi-1) = max( c(wi-1,wi) - d,0 ) / c(wi-1) +
+    lambda (wi-1) P_continuation (wi)
+
+P_continuation (wi) =
+| {wi-1 : c(wi-1,w)>0} | /
+| {wj-1,wj : c(wj-1,wj)>0} |
+
+| {wj-1,wj : c(wj-1,wj)>0} | - is a total number of word bigram types
+need to divide by this term to transform it to probability
+
+max( C(wi-1,wi) - d,0 ) - is to avoid negative probabilities
+
+lambda - will take probability mass from high order probability
+
+lambda(wi-1) = d / c(wi-1)
+    |{w : c(wi-1,w)>0}|
+
+where
+d - discount weight
+d / c(wi-1) - normalized discount
+{w : c(wi-1,w)>0} - total number of word types that can follow wi-1
+how many word types did we discount
+
+Dictionary
+word type is unique word
+novel continuation is a number of bigram types it completes
+
+2. Data
+For this project we use initiatives by General de Gaulle to combat the defeatism of the French population
+and to oppose the conditions of the armistice negotiated between the Germans and the French Government.
+
+The corpus contains
+- the Appeal of 18 June 1940
+that was the first speech made by Charles de Gaulle after his arrival in London in 1940
+following the Battle of France.
+- the Appeal of 22 June 1940.
+- 3 August text printed in the form of a poster “To all French people”.
+
+Data preprocessing for exploration:
+a) convert to low case
+b) remove french stopwords (la, le...)
+c) remove punctuation.
+d) potential improvement - stemming / lemmatization
+
+Data preprocessing for smoothing:
+a) convert to low case
+b) add special symbols in the end and in the beginning of the sentence
+c) remove punctuation.
+
+Removing punctuation might be questionable since it could represent some value for the task.
+To symplify, all sentences end with special symbol.
+
+For smoothing, special symbols are kept because of the meaningful input, e.g. "à la tête des armées".
+
+For smoothing, stopwords are kept to respect
+- small size of corpus (c. 2300 characters), and 
+- that we use bigram model.
+
+Similarly, no stemming / lemmatization is used.
+
+Example : 
+"Elle n'est pas seule !" -> "<s> elle n'est pas seule </s>"
+
+3. Insights from data exploration
+Looking on word cloud, most popular words are:
+france, francais, force, gouvernement, guerre, tous, n'est, ou.
+
+4. Known limitations
+No handling for unknown words.
+
+5. Test run
+run main.py
+> Enter the text:
+"La France"
+> 0.2
+
+References
+Kneser-Ney Smoothing video by Dan Jurafsky
+
+Speech and Language Processing by Dan Jurafsky and James H. Martin
+
+The Appeal of 18 June [Gouvernement](https://www.info.gouv.fr/actualite/lappel-du-18-juin-du-general-de-gaulle)
+
+Appel du 22 juin 1940 [Fresques - INA](https://fresques.ina.fr/de-gaulle/fiche-media/Gaulle00300/appel-du-22-juin-1940.html)
+
+L’affiche dite de l’Appel du 18 juin [ Musée de l'Armée] (https://www.musee-armee.fr/fileadmin/user_upload/Documents/Support-Visite-Fiches-Objets/Fiches-1939-1945/MA_fiche-objet-affiche-18-juin.pdf)
