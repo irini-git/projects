@@ -9,6 +9,9 @@ Bigram model to predict the conditional probability of the next word for French 
 **NLP 01 Good-Turing Smoothing**<br>
 Good-Turing smoothing for catch of the day.
 
+**NLP 01 Good-Turing Smoothing**<br>
+Kneser-Ney Smoothing for Appeal by General de Gaulle.
+
 **NLP 01 Minimum Edit distance**<br>
 Minimum Edit distance : calculate min edit distance between two words.
 
