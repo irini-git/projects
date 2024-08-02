@@ -13,7 +13,7 @@ Good-Turing smoothing for catch of the day.
 Kneser-Ney Smoothing for Appeal by General de Gaulle.
 
 **NLP 01 Minimum Edit distance**<br>
-Minimum Edit distance : calculate min edit distance between two words.
+Minimum Edit distance : from manager to leader.
 
 **NLP 01 SMS Spam Classifier**<br>
 Spam or not spam : classify SMS messages using Naive Bayes.
