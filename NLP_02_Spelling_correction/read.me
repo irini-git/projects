@@ -1,1 +1,225 @@
+Spelling Correction for non-word 
+
+1. Intro 
+
+When Dan Jurafsky asked to pause a video and guess a misspelled word "acress", I thought it was "access".
+
+Those who watch the to the end know that the noisy channel model with bigram model (add-1 smoothing for COCA)
+correctly idenfities "actress".
+
+The whole phase is "a stellar and versatile acress whose combination of sass and glamour".
+
+In this project we play with different corpora hoping to see different results.
+
+
+2.1 General
+
+Tasks
+- Spelling Error Detection
+- Spelling Error Correction
+  -- Autocorrect : when we know
+  -- Suggest a correction
+  -- Suggest a list of corrections
+
+Type of spelling errors
+- non-word errors (what the user typed is not a word)
+- real-word errors (misspelling is a word)
+    -- typographical error (three - there)
+    -- cognitive error (too - two)
+
+How we detect spelling errors?
+- using large dictionary
+
+How do we correct ...
+a. non-word spelling errors?
+- generate candidates
+- choose the best
+    -- shorted wighted edit distance
+    -- highest noisy channel probability
+
+b. real word spelling error
+-- generate candidate set, and incl. the word itself to it
+-- pick the word using Noisy channel, classifier
+
+
+2.2 Noisy Channel
+Error Correction for non-word spelling :
+original word -> noisy channel -> noisy word.
+
+That is translated as
+- take the output of the process
+- do probabilistic model of the channel for words
+- check which one looks the most like the noisy word
+
+Formula
+Given the observation x of a misspelled word, find the correct word w
+w_hat = argmax P(w|x) = {Bayes} = argmax P(x|w)P(w)/P(x)) =
+= {dropping the denominator, because x is a constant} =
+= argmax P(x|w)P(w)
+
+
+where 
+w_hat = max (likelihood * prior)
+w_hat = max (channel model * language model)
+P(w) - probability of the correct word w, also called language model
+P(x|w) - also called channel model or the error model
+
+Language model : how likely this word to be a word
+Channel model : if it was that word, how likely will it generate this error.
+
+Reminder
+P(the|its water is so transparent that)
+P(w|h) - word given some history
+P(x|w) - the error given the word
+
+3. Case study : "acress"
+Problem statement - guess the correct word given the typo "acress".
+
+Step 1. Generate candidate words to replace this word
+- words with similar spelling (this one is used) or
+- words with similar pronunciation
+
+Edit distance for spelling correction : Damerau-Levenshtein distance
+Min edit distance btw two strings where edits are
+- insertion (allow space or hyphen)
+- deletion
+- substitution
+- transposition of two adjacent letters (added in comparision to Levenshtein distance.)
+
+Interesting stats (though might depend on the corpus and other reasons):
+- 80% of errors are within edit distance 1
+- almost all errors are within edit distance 2
+
+Table 1. Words within 1 edit distance of "acress" (cut to first two)
+
+--------------------------------------------------
+error  | candidate  | correct | error  | type
+       | correction | letter  | letter |
+--------------------------------------------------
+acress | actress    | t       | -      | deletion
+--------------------------------------------------
+acress | cress      | -       | a      | insertion
+--------------------------------------------------
+...
+
+Step 2. Rank candidates
+- language model : any. For large (like web-scale) spelling correction use Stupid backoff.
+
+Table 2. Unigram Prior probability (cut to first two)
+Probability of the word P is the frequency normalized by the total number of words
+
+Counts from 404.253.213 words in Corpus of Contemporary English (COCA)
+----------------------------------------------
+word    | frequency of the word | P(word)
+----------------------------------------------
+actress | 9.321                 | .0000230573
+----------------------------------------------
+cress   | 220                   | .0000005442
+----------------------------------------------
+
+
+- channel model (or error model, or edit probability)
+P(x|w) - probability of the edit given w
+
+is a set of operations
+	- deletion      del   [x,y] : count (xy typed as x)
+	- insertion     ins   [x,y] : count (x typed as xy)
+	- substitution  sub   [x,y] : count (x typed as y)
+	- transposition trans [x,y] : count (xy typed as yx)
+
+Assumption : Insertion and deletion are conditioned on a previous character.
+
+Confusion matrix for spelling errors
+	- compute for operations
+
+Generate probabilities from the confusion matrix
+
+P(x|w) = 
+del   [wi-1, wi] / count(wi-1, w) if deletion
+ins   [wi-1, xi] / count(wi-1)    if insertion
+sub   [xi, wi]   / count(wi)      if substitution
+trans [wi, wi+1] / count(wi,wi+1) if transposition
+
+Channel model for actress (cut to first two lines)
+
+--------------------------------------------------
+candidate  | correct | error  | x|w   | P(x|word)
+correction | letter  | letter |       |
+--------------------------------------------------
+actress    | t       | -      | c|ct  | .000117
+--------------------------------------------------
+cress      | -       | a      | a|#   | .00000144
+--------------------------------------------------
+
+Noisy channel probabilistic for acress (cut to first two lines)
+
+-------------------------------------------------------------------------------
+candidate  | correct | error  | x|w   | P(x|word) | P(word)    | 10ˆP(x|w)P(w)
+correction | letter  | letter |       |           |            |
+-------------------------------------------------------------------------------
+actress    | t       | -      | c|ct  | .000117   | .0000231   | 2.7
+-------------------------------------------------------------------------------
+cress      | -       | a      | a|#   | .00000144 | .000000544 | .00078
+-------------------------------------------------------------------------------
+
+The most likely word according to this language model (unigram) and channel model is "across",
+"actress" is also quite likely.
+
+Noisy channel model with bigram model (add-1 smoothing for COCA) correctly identities "actress".
+
+3. Data
+The assumption is that the correct words depend on the corpus. 
+To prove us right (or wrong) we use two corpora
+- Scientific, Technical, and Medical, article on astronomy - 10 articles
+- Speeches by monarchs who abdicated.
+
+Language model
+Bigram Laplace in-built language model in nltk.
+
+4. Observations
+Confusion matrix are different from provided in the reference video.
+For more comprehensive view, the full comparison is required.
+The deviation might come from different data used : in the current exercise we use 1-edit data by Peter Norvig, that is different from the lecture.
+
+5. Known limitations, assumptions
+- Insertion and deletion are conditioned on a previous character.
+- Errors are considered within edit distance 1.
+- One entry is removed from edit confusion matrix, as unclear operation that likely to involve a whitespace.
+- Count 1edit has been adjusted to low case.
+- Count 1edit does not have P(x|word) for the error of missing "t". That makes correction to "actress" not possible to predict.
+This could have been mitigated by manually adding an entry, aligninh with the lecture.
+- Bigram Laplace in-built language model in nltk is used to fit, but the overall probabilities are calculated based on one gram.
+
+6. Conclusions and reflections
+Using unigram model, we predict "across" that is wrong looking into the context.
+At the same time, the original lecture notified about the same incorrect guess when using unigram model.
+
+Bigram model should have provided the correct outcome.
+But the analysis on "versatile acress whose" still gives "across" as the most probable word for both corpora.
+We believe it is dictated by the limitations of the both corpora (STM and abdication speeches).
+Augmenting the should be helpful.
+
+7. Test run
+FOR Resource punkt Please use the NLTK Downloader to obtain the resource:
+>>> import nltk
+>>> nltk.download('punkt')
+
+or >>> python -m nltk.downloader 'punkt'
+
+After that make sure some data is in the directorty ./data/
+STM articles start with S*.txt and abdication speeches with abdication*.txt
+
+Run main.py and you will have the result on the screen
+- table with candidates, correct and incorrect letters, operation, channel model, word model and probability.
+- the statement of the most probable word for misspelling given the corpus.
+
+References
+- The Spelling Correction video by Dan Jurafsky
+- Counts for all single-edit spelling correction edits by Peter Norvig
+- Birkbeck spelling error corpus - University of Oxford, Birkbeck spelling error corpus / Roger Mitton, Oxford Text Archive, http://hdl.handle.net/20.500.12024/0643.
+- Open Access Corpus of Scientific, Technical, and Medical Content - Daniel, R. (Creator), Groth, P. (Creator), Scerri, A. (Creator), Harper, C. A. (Creator), Vandenbussche, P. (Creator), Cox, J. (Creator) (2015). An Open Access Corpus of Scientific, Technical, and Medical Content. Github.
+
+
+
+
 

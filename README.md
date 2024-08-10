@@ -21,6 +21,9 @@ Spam or not spam : classify SMS messages using Naive Bayes.
 **NLP 01 Type Token Ratio**<br>
 Lexical variety within a text : calculate type-token ratio.
 
+**NLP 02 Spelling Correction**<br>
+Actress or across: Laplace (add one smoothing) for STM articles and speeches.
+
 ## Naming convention
 Code : NLP for Natural Language Processing<br>
 01 : difficulty of the concept<br>
