@@ -11,7 +11,6 @@ The whole phase is "a stellar and versatile acress whose combination of sass and
 
 In this project we play with different corpora hoping to see different results.
 
-
 2.1 General
 
 Tasks
@@ -199,7 +198,23 @@ But the analysis on "versatile acress whose" still gives "across" as the most pr
 We believe it is dictated by the limitations of the both corpora (STM and abdication speeches).
 Augmenting the should be helpful.
 
-7. Test run
+7. Directory structure
+For illustration purposes, only one txt file per corpus is provided.
+
+```
+NLP_02_Spelling_correction/
+├─ data/
+│  ├─ count_1edit.txt
+│  ├─ S0022314X13001777.txt
+│  ├─ abdication 1936 King Edward VIII.txt
+├─ confusion_matrix.py
+├─ spelling_correction_corpora.py
+├─ main.py
+├─ requirements.txt
+├─ read.me
+```
+
+8. Test run
 FOR Resource punkt Please use the NLTK Downloader to obtain the resource:
 >>> import nltk
 >>> nltk.download('punkt')
