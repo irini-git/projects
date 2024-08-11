@@ -206,7 +206,7 @@ class EditConfusionMatrix:
             # The chance that "b" is preceded by "a" >>> lm.score("b", ["a"])
             # Initial phrase : two of thew
             # 1. alternative is to use log not score
-            overall_score = lm.logscore("of", ["two"]) * lm.logscore(w, ["of"])
+            overall_score = lm.score("of", ["two"]) * lm.score(w, ["of"])
             self.df_subset.loc[self.df_subset['candidate'] == w, [column + " word model"]] = overall_score
 
         # Multiply channel model and word model
