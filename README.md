@@ -24,6 +24,9 @@ Lexical variety within a text : calculate type-token ratio.
 **NLP 02 Spelling Correction Non-Word**<br>
 Actress or across: Laplace (add one smoothing) for STM articles and speeches.
 
+**NLP 02 Spelling Correction Real Word**<br>
+Laplace (add one smoothing) for STM articles and X (twitter).
+
 ## Naming convention
 Code : NLP for Natural Language Processing<br>
 01 : difficulty of the concept<br>

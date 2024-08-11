@@ -1,1 +1,167 @@
+Spelling Correction for real word
+
+1. Intro
+Correct the phrase "two of thew" based on STM and X (twitter) using
+Noisy Channel model and Laplace (add one) smoothing for bigram language model.
+
+2.1 General
+
+Tasks
+- Spelling Error Detection
+- Spelling Error Correction
+  -- Autocorrect : when we know
+  -- Suggest a correction
+  -- Suggest a list of corrections
+
+Type of spelling errors
+- non-word errors (what the user typed is not a word)
+- real-word errors (misspelling is a word)
+    -- typographical error (three - there)
+    -- cognitive error (too - two)
+
+25-40% of spelling errors are real-words (Kukich 1992)
+
+How to correct real-word spelling error
+- for each word in sentence
+    -- generate candidate set that includes
+        -- the word itself
+        -- all single-letter edits that are English words
+        -- words that are homophones
+    -- choose best candidates
+        -- Noisy channel model
+        -- Task specific classifier
+
+Noisy channel for real-word spell corrections
+Given a sentence w1, w2, w3, ... wn
+- generate a set of candidates for each word wi
+    - candidate(w1) = {w1, w'1, w''1, ...}
+    - candidate(w2) = {w2, w'2, w''2, ...}
+    - candidate(wn) = {wn, w'n, w''n, ...}
+
+w1, w2 - words from the sentence
+w'1, w''1 - words with 1-edit distance, some correction of the initial word.
+
+- choose the sequence W that maximizes the probability P(W).
+We pick words w1, w''2, w''n, the sequence that is the most likely.
+
+In practice we use a simplification that there is only one error, only one incorrect word in a sentence.
+
+Where to get the probabilities
+- Language model (unigram, bigram)
+- channel model (same as for non-word spelling correction)
+- plus the probability for no error P(w|w)
+
+How to compute the probability of no error
+- what is the channel probability for a correctly typed word?
+in other words the word not changing
+
+It depends on the application, we can assume that
+- .90 meaning 1 error in 10 words
+- .995 for 1 error in 200 words.
+
+
+2.2 Example "two of thew"
+For each word we generate potential corrections each of them are a word of English with edit distance 1.
+
+- two : to, tao, too, two
+- of : off, on, of
+- threw : threw, thaw, the, they
+
+Of all of the possible set of sentences produced by words from this graph
+(to off threw, to on thaw, ... ) what is the most probable one according to noisy channel?
+
+2.3 Noisy Channel
+Given the observation x of a misspelled word, find the correct word w
+w_hat = argmax P(x|w)P(w)
+
+where 
+P(w) - probability of the correct word w, also called language model
+P(x|w) - also called channel model or the error model
+
+Language model : how likely this word to be a word
+Channel model : if it was that word, how likely will it generate this error.
+
+3. Case study : "two of thew"
+Problem statement - guess the correct word given the typo in "two of thew".
+
+Step 1. Generate candidate words to replace this word
+- the word itself
+- all single-letter edits that are English words
+
+Edit distance for spelling correction : Damerau-Levenshtein distance
+Min edit distance btw two strings where edits are
+- insertion (allow space or hyphen)
+- deletion
+- substitution
+- transposition of two adjacent letters (added in comparison to Levenshtein distance.)
+
+Table 1. Words within 1 edit distance of "thew" (cut to first two)
+----------------------------------------------------------
+x     | w    | x|w  | P(x|w)   | P(w)       | P(x|w)P(w)
+----------------------------------------------------------
+thew  | the  | ew|e | 0.000007 | 0.02       | 144
+---------------------------------------------------
+thew  | thew |      | 0.95     | 0.00000009 | 90
+----------------------------------------------------------
+...
+
+0.95 comes from the assumption that the channel model of the task has a probability 1 in 20.
+
+Reminder on channel model (or error model, or edit probability)
+P(x|w) - probability of the edit given w
+
+is a set of operations
+	- deletion      del   [x,y] : count (xy typed as x)
+	- insertion     ins   [x,y] : count (x typed as xy)
+	- substitution  sub   [x,y] : count (x typed as y)
+	- transposition trans [x,y] : count (xy typed as yx)
+
+Confusion matrix for spelling errors
+
+P(x|w) = 
+del   [wi-1, wi] / count(wi-1, w) if deletion
+ins   [wi-1, xi] / count(wi-1)    if insertion
+sub   [xi, wi]   / count(wi)      if substitution
+trans [wi, wi+1] / count(wi,wi+1) if transposition
+
+The most likely word according to this language model (unigram)  and channel model is "the" that is correct.
+
+3. Data
+- Scientific, Technical, and Medical, article on astronomy - 10 articles
+- X (Twitter) in-built corpus in nltk
+
+Language model
+Bigram Laplace in-built language model in nltk.
+
+4. Known limitations, assumptions
+- We assume There is only one error, only one incorrect word in a sentence.
+- Insertion and deletion are conditioned on a previous character.
+- Channel model is calculated based on STM corpus
+- Calculate probability for one word, not for a sequence of words.
+- Use probability for channel model and log for language model.
+
+5. Test run
+FOR Resource punkt Please use the NLTK Downloader to obtain the resource:
+>>> import nltk
+>>> nltk.download('punkt')
+>>> nltk.download('twitter_samples')
+
+or
+>>> python -m nltk.downloader 'punkt'
+>>> python -m nltk.downloader 'twitter_samples'
+
+After that make sure some data is in the directory ./data/
+STM articles start with S*.txt.
+
+Run main.py and you will have the result on the screen
+- table with candidates, correct and incorrect letters, operation, channel model, word model and probability.
+- the statement of the most probable word for misspelling given the corpus.
+
+References
+- Spelling Correction videos by Dan Jurafsky
+- Counts for all single-edit spelling correction edits by Peter Norvig
+- Open Access Corpus of Scientific, Technical, and Medical Content - Daniel, R. (Creator), Groth, P. (Creator), Scerri, A. (Creator), Harper, C. A. (Creator), Vandenbussche, P. (Creator), Cox, J. (Creator) (2015). An Open Access Corpus of Scientific, Technical, and Medical Content. Github.
+
+
+
 
