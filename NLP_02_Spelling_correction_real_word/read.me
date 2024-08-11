@@ -140,8 +140,43 @@ Bigram Laplace in-built language model in nltk.
 - Calculate probability for one word, not for a sequence of words.
 - Use probability for channel model and log for language model.
 
-5. Test run
-FOR Resource punkt Please use the NLTK Downloader to obtain the resource:
+
+5. Other considerations
+Human-computer interactions issues.
+    If we are comfortable : autocorrect
+    If less comfortable : give the best correction for the user to say Yes-No
+    If even less comfortable : give a correction list to pick from
+    If unconfident how to correct but sure there was an error : flag
+
+Noisy Channel
+    Incorrect independence assumptions (spelling is independent of neighbouring word)
+    Rather than multipy, we weight
+
+    w_hat = argmax P(x|w)P(w)^lambda
+    learn lambda from a development test set so that
+    to raise language model probability so that the product is more likely to pick
+    errors that are errors.
+
+Use spelling and pronunciation
+    convert a spelling to pronunciation
+    convert all other words to metaphone pronunciation
+    find words whose pronunciations is 1 or 2 edit distance from misspelling
+
+Allow richer edits
+Incorporate pronunciation into channel
+
+Factors that could influence P (misspelling | word)
+    - source letter
+    - target letter
+    - surrounding letters
+    - the position of the word
+    - nearby keys on the keyboard ...
+
+Classifier-based methods
+    - combine channel and language model
+
+6. Test run
+Please use the NLTK Downloader to obtain the resources:
 >>> import nltk
 >>> nltk.download('punkt')
 >>> nltk.download('twitter_samples')
