@@ -1,1 +1,204 @@
+1. Text Classification
 
+Application
+    - assign subject category
+    - spam detection
+    - sentiment analysis (e.g. review identification)
+    - authorship attribution
+    - age/gender identification
+    - language identification
+    - decide the topic of the scientific article
+
+Gender identification
+    - number of pronouns : female writers tend to use more pronouns (she, he)
+    - number of determiners : male writers use more facts and determiners (the)
+    - number of noun phrases, etc.
+
+Input
+    - a document d
+    - a fixed set of classes C={c1, c2, ..., cj}
+Output
+    - a predicted class for the document c from the set of classes
+
+Possible how is a rule-based approach, for ex. list of emails for spam, for specific phrases
+Preparing and maintaining those rules is expensive
+
+Supervised Machine Learning
+    Input
+        - a document d
+        - a fixed set of classes C={c1, c2, ..., cj}
+        - (need one more thing) a training set of m hand-labeled documents (d1,c1), ..., (dm, cm)
+    Output
+        - a learned classifier y:d->c
+The goal of ML is to produce a classifier gamma y, given a new document it will give us a class.
+
+Classification Methods:
+- Naive Bayes
+- Logistic regression
+- Support-vector machines SVMs
+- k-nearest neighbors
+
+2. Naive Bayes Classifier
+- based on Bayes rule
+- relies on simple representation of document (bag of words)
+
+Bag of words
+- put all words together
+- no ordering of the words
+- a list of words with counts how many time the word occurred
+
+For each class compute its probability given the document
+P(c|d) = P(d|c)P(c)/P(d)
+
+P(d|c) - probability of the document given the class
+P(c) - probability of the class
+P(d) - probability of the document
+
+C_MAP = argmax P (c|d) = argmax P(d|c)P(c)/P(d) = argmax P(d|c)P(c)
+= argmax P(x1, x2, ..., xn |c)
+
+C_MAP best aposteriori class, the class to assign the document to
+P(d|c) likelihood
+P(c) prior probability of the class
+
+It is ok to drop the denominator probability of document P(d) is identical for all classes.
+
+P(d|c) - represent the document by features P(x1, x2, ..., xn |c)
+
+How to compute
+P(c) - probability of the class, how often the class occurs.
+
+if n different features, O(|X|^n * |C|) parameters, need assumptions:
+- position in the document does not matter
+- different features have independent probabilities P(xi|cj) given the class c,
+so we do not care about dependencies between x1 and x2.
+
+P(x1, x2, ..., xn |c) = P(x1|c) * P(x2|c) * ... * P(xn|c)
+
+C_NB = argmax P(cj) * P (x|c)
+P(cj) - prior probability of the class
+P (x|c) - for all features, probability of this feature given the class
+
+For all classes we will compute probabilities, and pick the highest
+c1 : P(c1) * P(wi|c1)
+c2 : P(c2) * P(wi|c2)
+
+Problem is to multiply a lot of probabilities (btw 0 and 1),
+the result might be small. Our solution is to use log and sum log probabilities.
+
+C_NB = argmax [log P(cj) + SUM log P (x|c))
+
+Taking log will not change the ranking of the classes.
+Linear function of the input -> Naive Bayes is a liner classifier.
+
+3. Parameters for Naive Bayes
+
+3.1 [not used] Maximum Likelihood Estimates MLE
+simply use frequency in the data
+
+-- prior probability for the particular document being in a class cj
+P(cj) = doc_count(C=cj)/N_doc
+
+where
+doc_count(C=cj) - count of all documents having the class cj
+N_doc - count all the documents
+
+-- likelihood of words wi given the class cj
+in other words fraction of times word wi appears among all words in document of topic cj
+P(wi|cj)=count(wi,cj) / SUM count(w,cj)
+
+count(wi,cj) count number of times words wi occurs in documents of class j
+SUM count(w,cj) count of all words in class j
+
+To do so, create a mega document for class j by putting together all docs on this topic
+and use the frequency of w in mega documents
+
+We do not use MLE for Naive Bayes because... if so there will be classes that we will never use.
+Example : no training document with the word "fantastic" for the class "positive".
+
+P ("fantastic"|positive) = count("fantastic", positive) / SUM count (w, positive) = 0
+
+making Product P (x|c) as 0, and C_MAP zero as well.
+
+C_NB = argmax P(cj) * Product P (x|c)
+
+3.2 Laplace (add-1) smoothing for Naive Bayes
+
+P(wi|cj)=count(wi,cj) / SUM count(w,cj)  transforms to
+P(wi|cj)=count(wi,cj) +1 / SUM (count(w,cj) + 1) =
+P(wi|cj)=count(wi,cj) +1 / SUM (count(w,cj)) + |V|
+
+SUM (count(w,cj)) - total number of tokens in class cj
+|V| - vocabulary size
+
+3.3 How to calculate parameters
+- from training corpus, extract vocabulary (list of words)
+- calculate priors for each class (cj) terms
+    get set of documents for each class
+    -- for each cj in C do
+        docs_j <- all docs with class=cj
+    -- P(cj) <- |docs_j| / |total N documents|
+- calculate likelihood for every word wk given every topic cj P(wk|cj)
+    -- create mega document by concatenating all documents doc_j
+        Text <- single doc containing all docs_j
+    -- for each word w_k in Vocabulary
+        n_k <- number of occurence of wk in Text_j
+    -- P(wk|cj) = (nk + alpha ) / (n + alpha * |Vocabulary|)
+for add alpha version.
+
+4. Unknown words and stop words
+4.1 Unknown
+Words that appear in our test data but not in training or vocabulary
+We ignore unknown words
+    - remove them from the test document
+    - do not include any probability for them
+
+4.2 Stopwords
+Words that are frequent like "the" and "a"
+To locate stopwords
+    - sort the vocabulary by word frequency in training set
+    - call the top 10 or 50 words the stopword list
+    - remove all stop words from both training and test set
+In practice most Naive Bayes text classification algorithms use all words and do not remove stopwords.
+
+5. Sentiment and Binary Naive Bayes
+5.1 Compute prior probability of the class
+P(cj) = Ncj / Ntotal
+number of documents in that class divided by all documents in all classes
+
+6. Binary multinomial Naive Bayes
+Word occurrence seems to be more important than word frequency.
+Having multiple "fantastic" will not tell us more.
+
+Binary multinomial Naive Bayes or binary NB
+- clip our word counts as 1. Even if the word occurs multiple times, we pretend it is one.
+- it is different from Bernoulli Naive Bayes not generally used for test classification
+- remove all duplicates for the test document as well
+
+Compared to Naive Bayes
+- in training, priors are computed in the same way
+- likelihoods
+    -- before computing likelihoods, remove duplicates in each doc
+    -- only keep single occurrence
+- in testing, similarly remove all duplicates
+
+7. Assumptions, limitations
+Position in the document does not matter
+Different features have independent probabilities P(xi|cj) given the class c,
+so we do not care about dependencies between x1 and x2.
+Observation : in the example the result probability for class - is different comapred to youtube video.
+The overall prediction (choice of classes) is correct.
+
+
+8. Structure
+
+```
+├── data                    # Input data
+├── src                     # Source files
+├── read.me                 # Details about the project
+└── requirements.txt        # List all of the dependencies
+```
+
+References
+Speech and Language Processing by Dan Jurafsky and James H. Martin.
+Videos CS124 NLP by Dan Jurafsky
