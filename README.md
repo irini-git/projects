@@ -24,6 +24,9 @@ Lexical variety within a text : calculate type-token ratio.
 **NLP 02 Naive Bayes**<br>
 Text Classification with Naive Bayes and Binary NB.
 
+**NLP_02_Naive_Bayes_negation**
+Text Classification with Naive Bayes and Binary NB : negation in samples.
+
 **NLP 02 Spelling Correction Non-Word**<br>
 Actress or across: Laplace (add one smoothing) for STM articles and speeches.
 

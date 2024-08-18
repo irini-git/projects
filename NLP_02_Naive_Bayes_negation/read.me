@@ -1,3 +1,6 @@
+In this project we use Naive Bayes with simple baseline method to deal with negation.
+The tasks is sentiment analysis / text classification if the review is positive or negative.
+
 1. Text Classification
 
 Application
@@ -161,16 +164,12 @@ To locate stopwords
     - remove all stop words from both training and test set
 In practice most Naive Bayes text classification algorithms use all words and do not remove stopwords.
 
-5. Sentiment and Binary Naive Bayes
-5.1 Compute prior probability of the class
-P(cj) = Ncj / Ntotal
-number of documents in that class divided by all documents in all classes
-
 6. Binary multinomial Naive Bayes
 Word occurrence seems to be more important than word frequency.
 Having multiple "fantastic" will not tell us more.
 
 Binary multinomial Naive Bayes or binary NB
+
 - clip our word counts as 1. Even if the word occurs multiple times, we pretend it is one.
 - it is different from Bernoulli Naive Bayes not generally used for test classification
 - remove all duplicates for the test document as well
@@ -182,15 +181,77 @@ Compared to Naive Bayes
     -- only keep single occurrence
 - in testing, similarly remove all duplicates
 
-7. Assumptions, limitations
+7. Dealing with Negation
+
+Negation
+    - change the meaning of like to negative
+    Ex. Compare "I really like this movie" to "I really don't like this movie"
+    - can also change negative to positive
+    Ex. "Doesn't let us get bored"
+
+Simple baseline method
+Add NOT_ to every word between negation and following punctuation.
+That doubles the vocabulary size...
+
+"didn't like this movie, but I" ->
+"didn't NOT_like NOT_this NOT_movie, but I"
+
+8. Lexicons
+
+Sometimes we don't have enough labeled training data.
+Can use pre-built words lists called "lexicons".
+There are various publicly available lexicons.
+    - MPQA Subjectivity Cues Lexicon labels for about 7k words if they are positive or negative
+    - The general Inquirer from 60s has positive (2k), negative (2k) words
+    and other tipe
+
+How to use Lexicons
+For example of positive and negative
+Add a new feature that gets a count when a word from lexicon occurs
+All positive words (good, great) or negative words (bad) count for that feature.
+
+Using one or two features isn't as good as using all the words.
+But when training data is sparse or nor representative of the test set
+(meaning we can not rely of the same words appearing in test set),
+dense lexicon features could help.
+
+9. Spam Filtering
+(other types of tasks)
+
+Features of NB text classifier
+- if the text mentions millions of dollars
+- from starts with numbers
+- subject in all capital
+- some specific phases like "One hundred percent guaranteed"
+
+Those are features for spam that could be used for NB classifier.
+
+10. Language ID
+Determine what language a text is written in, it is an important preprocessing step.
+For these tasks, features based on character n-grams do very well
+(certain type of character n-grams are very distinctive for some language)
+
+Important to train on diff variaty of each language.
+
+11.  Closing remarks
+
+Naive Bayes is not so Naive
+- very fast, low storage requirements
+- work well with small amount of training data
+- robust to irrelevant features:
+    irrelevant features cancel each other without affecting results
+- very good in domains with many equally important features:
+    decision trees suffer from fragmentation in such cases - especially if little data
+- optimal (in the rare case in the world) if the independent assumptions hold
+
+But other classifiers gives better accuracy when enough data.
+
+12. Assumptions, limitations
 Position in the document does not matter
 Different features have independent probabilities P(xi|cj) given the class c,
 so we do not care about dependencies between x1 and x2.
-Observation : in the example the result probability for class - is different comapred to youtube video.
-The overall prediction (choice of classes) is correct.
 
-
-8. Structure
+13. Structure
 
 ```
 ├── data                    # Input data
