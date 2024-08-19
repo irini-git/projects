@@ -75,7 +75,7 @@ class SentimentData():
                         d_new = negation + " " + " ".join(neg_d)
 
                         # print(f'No punctuation, leading negation : {d} -> {d_new}')
-                        return d
+                        return d_new
 
                     elif not d.endswith(negation):
                         # Case 2
@@ -94,7 +94,7 @@ class SentimentData():
                         # recreate the phrase
                         d_new = res[0][0] + negation + " " + " ".join(neg_d)
                         # print(f'No punctuation, negation in the middle : {d} -> {d_new}')
-                        return
+                        return d_new
 
                 else :
                     # Case 3
@@ -116,7 +116,7 @@ class SentimentData():
                         d_new = negation + " " + " ".join(neg_d) + res[1]
 
                         # print(f'Punctuation, leading negation : {d} -> {d_new}')
-                        return d
+                        return d_new
 
                     else:
                         # Case 4
@@ -134,12 +134,15 @@ class SentimentData():
                         # recreate the phrase
                         # not recreating punctuation
                         d_new = res[0] + " " + negation + " " + " ".join(neg_d) + " " + res[2]
-                        return d
+                        return d_new
             else:
                 # no negation, return the initial entry
                 return d
 
         df['doc_'] = df['documents'].apply(lambda row : change_if_negation(row))
+
+        # remove punctuation
+        df["documents"] = df['documents'].str.replace(',', '')
 
         return df
 
@@ -197,18 +200,25 @@ class SentimentData():
         :return: cleaned test set
         """
 
-        def get_unque_words(df):
+        def get_unique_words(df):
             # Concatenate all documents in one string
-            data = ' '.join(df["documents"])
+            words = ' '.join(df["documents"])
 
             # Create list of unique words
-            data = list(set(data.split(" ")))
+            words = list(set(words.split(" ")))
 
-            return data
+            # Double vocabulary, add NOT to all words, except negation
+            # We assume here that there is only one negation per entry
+            # [f(x) for x in sequence if condition]
+            words_NOT = ["NOT_" + w for w in words if w!="didn't"]
 
-        self.vocabulary = get_unque_words(self.training_subset)
+            words += words_NOT
 
-        test_words = get_unque_words(self.test_subset)
+            return words
+
+        self.vocabulary = get_unique_words(self.training_subset)
+
+        test_words = get_unique_words(self.test_subset)
 
         # UNK words : words in test and NOT in training
         self.UNK = np.setdiff1d(test_words, self.vocabulary)
@@ -240,7 +250,7 @@ class SentimentData():
 
         def words_in_class(category, df=self.training_subset):
             df_class = df.query('category == @category')
-            words = ' '.join(df_class['documents'])
+            words = ' '.join(df_class['doc_'])
 
             if self.binary_naives_bayes:
                 # Create list of unique words
