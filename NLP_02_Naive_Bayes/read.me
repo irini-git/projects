@@ -1,0 +1,37 @@
+Naive Bayes and Language Models
+
+General model for multinomial Naive Bayes
+
+- we have a class "c" for China
+- we randomly generate a document about China
+    -- first word x1 = "Shanghai"
+    -- x2 = "and"
+    -- x3 = "Shenzhen"
+    -- x3 = "issue"
+    -- x4 = "bonds"
+
+Each word have some probability.
+
+Naive Bayes classifiers can use any sort of feature
+    - URL, email address, dictionary, network features
+But if as in the previous slide
+    - we use only word features
+    - we use all of the words in the text (not a subset)
+Naive Bayes turn out kind of Language Model,
+each class is a unigram language model:
+
+Class "pos", P(w|pos) P(w|neg)
+I 0.1 0.2
+love 0.1 0.001
+this 0.01 0.01
+fun 0.05 0.005
+film 0.1 0.1
+
+P(sentence|pos) = multiply all
+
+Each class is a separate class condition language model
+
+
+
+
+
