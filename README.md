@@ -33,7 +33,8 @@ Actress or across: Laplace (add one smoothing) for STM articles and speeches.
 **NLP 02 Spelling Correction Real Word**<br>
 Laplace (add one smoothing) for STM articles and X (twitter).
 
-
+**NLP 02 Text Classification Evaluation**<br>
+Multi-label text classification using The Reuters-21578 dataset.
 
 ## Naming convention
 Code : NLP for Natural Language Processing<br>
