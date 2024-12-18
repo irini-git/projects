@@ -1,1 +1,146 @@
+Text Classification and Naive Bayes
 
+1. Data ------------------------------
+
+The Reuters-21578 dataset is a collection of documents with news articles.
+The original corpus has 10,369 documents and a vocabulary of 29,930 words.
+- 21,578 documents
+- 9603 training, 3299 test articles
+- 118 categories
+    -- an article can be in more than one category
+    -- average class has how many categories
+
+Total N of articles : 21 578
+Total N of articles with topics : 11 367
+
+Optional tags : title, people, orgs, exchanges, and companies.
+
+Observation
+id 17192 : typo in date "31-MAR-1987 605:12:19.12". Manually corrected to "31-MAR-1987 605:12:19.12"
+
+2. Load, preprocess and explore data ------------------------------
+First load : data is loaded as *sgm files and saved to pickle files.
+Other than first load : data is loaded from pickle file as dataframe.
+
+Out of all available information (tags), only below fields are used for the analysis:
+id - numeric id of the entry, created within current task
+file - original *sgm file that contains the article
+split - split as per original data
+topic - topic of the article as per original data
+article - original article text
+text - cleaned article text
+
+Frequency of articles is plotted as bar chart.
+It is possible for article to be associated with
+- no topic (those entries are out scoped)
+- one topic
+- multiple topics.
+For bar chart, we visualize the frequency of individual topic per se, not combinations of topics as present
+in the original data.
+
+Word count for most popular topics
+For the selected subset of most popular topics, word could is plotted.
+Observation : some words might be considered as stopwords specific dataset, e.g., "mln", "dlr", "vs".
+Observation : bar chart correctly identifies the frequent topics, word cloud have repeated words.
+Might be related to the writing of specific characters, did not investigate further.
+
+Observations
+Most popular topics, count of articles :
+Below are overall counts, and test / train split is visualized in a bar chart
+0       earn   3987
+1        acq   2448
+2   money-fx    801
+3      crude    634 (crude and grain swap positions in course)
+4      grain    628 (crude and grain swap positions in course)
+5      trade    552
+6   interest    513
+7      wheat    306 (wheat and ship swap positions in course)
+8       ship    305 (wheat and ship swap positions in course)
+9       corn    254
+10       dlr    217
+
+3. Classification
+- tfidf_vectorizer
+- MultiOutputClassifier, XGBClassifier with default parameters
+
+4. Review results, using video NLP
+- Confusion matrix
+  For each pair of classes <c1, c2> how many documents from c1 were incorrectly assigned to c2
+  For classifier to run we used MultiLabelBinarizer, so that topics are transformed to lists of 1,0.
+  For example
+        -- preprocessed data looked like [earn, acq]
+        -- transformed data [0 0 0 1 0 1]
+  For comprehensive review of results, we need actual topics.
+
+  The confusion matrix has the form as below
+        -- rows are true topics
+        -- columns are assigned topics
+  Is it possible for articles to be assigned to multiple topics.
+  For example, true value is "earn" and assigned "earn, 'old"
+
+                Assigned topics
+  ------------------------------------------------
+  True Topics | earn | acq  |
+  ------------------------------------------------
+  earn        |      |      |
+  ------------------------------------------------
+  acq         |      |      |
+  ------------------------------------------------
+
+Result for test data
+For each pair of classes <earn, acq> how many documents from c1 were incorrectly assigned to acq
+    9 documents were incorrectly assigned to 'acq'
+
+c_5,6 : row 5 (trade), column 6 (interest)
+    documents about 'money-fx', our classifer assigned to 'interest'
+
+Diagonal gives us correct classification
+    earn - earn : 744
+    acq - acq : 428
+    trade - trade : 64
+
+Recall : fraction of docs in class i classified correctly
+Precision : fraction of focs assigned class i that are actually about class i
+Accuracy (1 - error rate) : fraction of docs classified correctly
+
+Since we have more than one class, how to combine?
+- Macro-averaging : compute performance for each class, then average.
+- Micro-averaging : collect decisions for all classes, compute contingency table, evaluate.
+In micro-averaging, the score will be dominated by more common classes.
+In macro-averaging, each class wll participate equally.
+
+Training : compute parameters
+Development test set : test performance - Precision, recall and accuracy
+Test set : clean, unseen test
+    avoid overfitting
+    more conservative estimate of performance
+
+          earn  acq  trade  crude  money-fx  interest  iron-steel  sugar  \
+earn       744    9      0      0         0         0           0      0
+acq          6  428      0      0         0         0           1      1
+trade        0    0     64      0         2         0           0      0
+crude        1    0      0     64         0         0           0      0
+money-fx     0    0      0      0        44         2           0      0
+interest     0    0      0      0         0        39           0      0
+
+          veg-oil
+earn            0
+acq             0
+trade           1
+crude           0
+money-fx        0
+interest        0
+
+Cross validation over multiple splits
+ - handle sampling errors from different datasets
+ - pool results for each split
+ - compute pooled dev set performance
+avoid having small datasets
+
+
+References
+Reuters-21578, Distribution 1.0, available from David D. Lewis' professional home page, currently: http://www.research.att.com/~lewis
+(this line is from read.me, but page not found. Downloaded from https://arxiv.org/abs/1604.00783)
+
+5 8 Text Classification Evaluation 7 17
+https://www.youtube.com/watch?v=NjhVTN19JDI&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=26
