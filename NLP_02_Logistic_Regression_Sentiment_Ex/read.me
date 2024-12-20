@@ -1,1 +1,147 @@
+Classification on a movie review
 
+On a simplistic example of a movie review, provide a probability
+that the review is positive y = 1 or negative 0.
+
+Features used
+- count (positive lexicon) in doc
+- count (negative lexicon) in doc
+- 1 if "no" in doc, 0 over wise
+- count (1st and 2nd pronouns in doc)
+- 1 if "!" in doc, 0 other wise
+- log (word count of doc)
+
+What could be a feature
+- period disambiguation : end of sentence vs short word.
+    -- preceding word
+    -- known abbreviations
+    -- combination of property, like St. <word>
+
+
+
+Revew text (cleaned)
+its hokey there are no surprises and the writing is secondrate
+so why was it so enjoable for one thing the cast is
+great another nice touch is the music i was overcome with the urge to get off
+the couch and start dancing it sucked me in and itll do the same to you
+
+Support dataframe
+                             definition  value  weight
+x1      count (positive lexicon) in doc   3.00     2.5
+x2      count (negative lexicon) in doc   2.00    -5.0
+x3         1 if "no" in doc, 0 overwise   1.00    -1.2
+x4  count (1st and 2nd pronouns in doc)   3.00     0.5
+x5         1 if "!" in doc, 0 otherwise   0.00     2.0
+x6              log (word count of doc)   3.99     0.7
+
+Assumed bias = 0.1
+
+Probability of positive review = sigma(weight * x + bias)
+Probability of negative review = 1 - sigma(weight * x + bias)
+
+Probability of review being positive : 0.67
+Probability of review being negative : 0.33
+
+Logistic regression
+- supervised classification
+    -- we know the correct label y (either 0 or 1) for each x
+    -- but what the systems produces is an estimate y_hat
+- we want to learn parameters (w and b) to minimze the
+distance btw our estimate y_hat_i and true y_i.
+    -- we need a distance estimator : a loss function or cost function
+       a metric how close y is : loss function
+       rather than measure the simlaroty, we measure distance
+       cross-entropy loss
+    -- we need an optimization algorithm to update w and b to minimize loss
+       stochastic gradient descent
+
+y_hat = sigma (w*x+b)
+y is ether 0 or 1
+
+L(y_hat, y) - how much y_hat differs from the true y
+Negative log likelhood loss = cross-entropy
+  conditional maximum likelihood estimation
+  - we choose the parameters w,b that maximize
+    -- the log probability
+    -- of the true labels in the training data
+    -- given observations x
+
+Goal : maximize probabilty of the correct label p(y|x)
+
+There are only 2 discrete outcome (0 or 1) we can express the probablty
+p(y|x) from our classifer as
+p(y|x) = y_hat^y * (1-y_hat)^(1-y)
+
+if y = 1:
+    p(y|x) = y_hat^1 (1-y_hat)^(0) = y_hat
+if y = 0:
+    p(y|x) = 1-y_hat
+
+Log both sides
+    log p (y|x) = log(y_hat^y * (1-y_hat)^(1-y))
+    log p (y|x) = y*log(y_hat) + (1-y)*log(1-y_hat))
+
+Instead of maximize probability, turn it to minimize loss
+negate the log
+
+L_CE(y^hat, y) = -log p (y|x) =
+    = - (y*log(y_hat) + (1-y)*log(1-y_hat)))
+
+y^hat = sigma(x*w + b)
+
+Sentiment example,we want the loss to be
+- smaller if the model estimate is close to correct
+- bigger if model is confused
+
+For our example of y=1
+L_CE(y^hat, y) =
+    = - (y*log(y_hat) + (1-y)*log(1-y_hat)))
+    = - (y*log(y_hat))
+    = - log(y_hat)
+
+In our example
+    - Probability of review being positive : 0.67
+    - Cross entropy loss for y = 1 : 0.41 (small)
+
+Stochastic Gradient Descent
+goal : minimize the loss
+
+Lets make explicit that the loss function is parametrized by weights theta = (w,b)
+we represent y_hat as f(w, theta) to make the dependence on theta
+more obvious
+
+We want the weights that minimize the loss,
+averaged over all examples
+
+Loss function for logistic regression
+- convex has one minimum
+if the slope is negative, we move positive (opposte)
+
+Gradient of a function of many variables is a vector
+pointing in the direction of the greatest increase
+of a function.
+
+Gradient descent
+find the gradient of the loss function at the current point
+and move in the opposite direction.
+
+How much we move
+weighted by learning rate
+
+Converges or loss start growing again
+Learning rate eta is hyperparameter : start with large and decrease
+
+
+
+
+
+
+References
+Logistic Regression 3 A Sentiment Example
+https://www.youtube.com/watch?v=u_PiPYi4s7E&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=29
+
+Logistic Regression 4 Cross Entropy Loss
+https://www.youtube.com/watch?v=TDOCw0L-qz0&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=30
+
+Logistic Regression 5 Stochastic Gradient Descent
+https://www.youtube.com/watch?v=gPab8n1QK1M&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=31
