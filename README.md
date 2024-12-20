@@ -36,6 +36,9 @@ Laplace (add one smoothing) for STM articles and X (twitter).
 **NLP 02 Text Classification Evaluation**<br>
 Multi-label text classification using The Reuters-21578 dataset.
 
+**NLP 02 Logistic Regression Sentiment**<br>
+Logistic regression for simplified sentiment analysis.
+
 ## Naming convention
 Code : NLP for Natural Language Processing<br>
 01 : difficulty of the concept<br>
