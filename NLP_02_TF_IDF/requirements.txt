@@ -1,0 +1,3 @@
+nltk
+altair
+vl-convert-python

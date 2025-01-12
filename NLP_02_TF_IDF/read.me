@@ -1,0 +1,405 @@
+Information Retrieval, IR
+finding material of an unstructured nature (usually text)
+that satisfies an information need from within large collections (usually stored on computers).
+    - web search
+    - e-mail search
+    - searching your laptop
+    - corporate knowledge bases
+    - legal info retrieval
+
+Basic assumptions
+- Collection : a set of documents, assume it is a static
+- Goal : retrieve docs with info that are relevant
+to the users info need and helps the use complete a task
+
+User task
+|
+Infor need
+|
+query ------------------
+^                       |
+|                     search engnie < ----
+|                        |                |
+query refinement      results      collection
+
+Precision
+    fraction of retrieved docs that are relevant
+    to the users info need
+Recall
+    fraction of relevant docs in collection
+    that are retrieved
+
+Document matrix (not practical for info retrieval)
+Which plays of Shakespeare contain the words 'Brutus' and 'Caesar' but not 'Calpunia'?
+Using NLTK data.
+    - solution 1 : search for a combined condition through all documents
+    - solution 2 : create a document matrix
+Such matrix will be sparse.
+
+
+Inverted index
+The key data structure underlying modern IR (Information Retrieval)
+For each term t, we must store a lst of all documents that contain t
+    - identify each doc by a docID, a document serial number
+Can we use fixed-sized array for this? - inefficient
+    - we need variable posting lists
+    terms in documents and posting list given a different document
+
+    dictionary -> posting
+    Brutus -> 1 2 4 11
+    Caesar -> 1 2 4 5
+    Calpurnia -> 2 31 54 101
+
+    dictionary is relatively small, stored in memory
+    posting - stored on disk
+
+Text preprocessing
+    - tokenization
+        -- cut character sequence into word tokens
+    - normalization
+        -- map text and query term to the same form
+    -- other mapping (stemming)
+        -- dif forms of a root to match
+    -- stop words
+        -- we may omit very common words (or not)
+
+Storage
+    - number of terms relatively modest
+    - pointer of where posting lists are
+    - posting lists (large but manageable)
+
+Questions
+- how to do index efficiently
+- how much storage we need
+
+Boolean queries : Exact match
+Boolean information retrieval being asked to query a Boolean expression
+    - and, or, not and join query terms
+        -- each document is a set of words
+        -- each doc matches or not boolean expression
+    - the simplest model to build (starting point)
+Commercial retrieval tool for 3 decades, before ranking
+retrieval model.
+Many current search system as stll boolean
+    - email, mac os, library catalog
+
+
+Query optimization example
+Process in order of increasing freq
+    - start with smallest set, then keep cutting further
+
+Phrase queries
+- match a pair of words as a unit, "stanford university"
+- the sentence "I went to university at Stanford" is not a match
+- many queries are implicit phrase queries, "san francisco"
+- it no longer suffices to store only
+
+1. biword indexes
+       index every consecutive pair of terms in the text as a phrase
+       for example, the text "friends, romans, countrymen" generates
+            -- friends romans
+            -- romans countrymen
+       each of these biwords is now a dictionary term
+       two-word phrase query-processing is now immediate
+       longer phrases can be processed by breaking them down
+        -- "stanform university palo alto" to be broken into
+            boolean query on biwords
+            "stanford university" AND "university palo" AND "palo alto"
+            that is not perfectm can have false positive
+
+    issues
+        false positives
+        index blowup due to bigger dictionary
+
+2. Positional indexes (standard solution)
+<term, number of doc containing term>
+
+doc1 : position1, position2 ...
+doc2 : position1...
+
+Example
+Which of docs 1,2,3 and 4 could contain
+"to be or not to be"
+<be > 993427> The word "be" occurs almost in mln of docs
+1: 7, 18, 33, 72, 86, 231
+2: 3, 149
+4: 17, 191, 291, 430, 434
+5: 363, 367 ...
+
+it does not occur in document 3
+
+- for phrase queries, we use a merge algorith recursively at the document level
+- but we now need to deal with more than just equality
+
+need an entry for each occurence, not just once per document
+
+A positional index is 2-4 as large as a non-positional index
+Positional indez size 35-50% of volume of original text
+
+3. Combination schemes
+- for particular phrases, "the who" - it is inefficient
+- mixed indexing scheme
+    common phrases - biwords
+    less common - unique
+
+    work out in advance the common biwords
+    in reality, do it more dynamically
+
+Ranked Retrieval
+    - good boolean queries are not good for all the users
+    - feast or famine problem : too few or too many
+    - takes a lot of skills
+    - AND : gives too few, OR too many results
+
+Rather that a set of docs, return an ordering over the top
+documents in the collection
+
+Free text queries (associated with ranked retrieval models)
+rathe than a query language of operations and expressions
+the user query is one or more qords in a human language
+
+Feast or famine does not exist in ranked retrieval
+
+Good system scoring - how?
+    - assign a score to each document
+    how the query and document reflect each other
+
+One term-query
+    - if a query term does not occur, the score is zero
+    - the more frequent the query term in the doc,
+        the higher the score
+
+Scoring with the Jaccard Coefficient
+    - measure for the overlap btw set A and B
+    - number of items in A and B and divide by
+     jaccard(A, B) = |A intersection B | / |A union B|
+     jaccard(A, A) = 1
+     sets dont have to be same size, always btw 0 and 1
+     Jaccard coef with be smaller for the smaller set, with same number of words
+
+issues :
+    - does not consider term frequency
+    - rare terms are more informative than frequent terms
+    - need a more sophisticated way of normalizing for length
+    use cosine similarity score : |A intersect| / |sqrt (A union B)|
+
+Binary term-document incidence matrix
+        Antony and Cleopatra | Julius Caesar | count vector
+Antony  1                       1               73
+Brutus  1                       1               157
+Caesar  1                       1               227
+mercy   1                       0               0
+
+1 or 0 in each cell if word occured in the document,
+it is a binary vector -> count vector (number of times the word occur)
+    - size of vocabulary |V|
+    - bag of words : not considering the ordering, but how many times
+
+Documents have same vectors
+    doc1 = 'John is quicker than Mary'
+    doc2 = 'Mary is quicker than John'
+and it is a limitation and a step back
+    - positional index was able to distinguish
+
+Term frequency
+    - number of times the term occurs
+    - raw term frequency is not what we want
+    - relevance goes up with the number of mentioning, but not linear
+
+term frequency
+    - rate
+    - count in Information Retrieval
+
+Log-frequency weighting
+    1 + log10 (term frequency), if tf > 0
+    0 otherwse (words does not occur)
+
+to score a document-query pair
+    - sum over terms t in both q and d
+    score = SUM (1 + log (tf)t,d)
+    calculate for each term and sum up
+    score is 0 when none of query terms is present
+
+Reverse document frequency
+- Rare terms are more informative that frequent\ //
+    -- stop words
+- give a high weight to rare terms
+- frequent terms
+    -- positive weight by smaller
+- use document frequency df
+
+idf weight
+- df_t if the document frequency of t
+    the number of documents that contain t
+
+    df_t is an inverse measure of the informativeness of t
+    df_t <= N (vocabulary size)
+
+Ex. collection is 1mln, the term occurs in 10 documents
+    df_t = 10
+
+idf_t = log 10 (N / df_t)
+
+log is used to dampen, other wise too strong.
+The base of log is not important, using 10 here.
+
+The word that occurs in every document has the value zero.
+
+There is one idf for each term, and it wll be
+
+Does idf have effect on ranking for one-term queries
+    - iPhone - No.
+    log (N / df), scaling factor
+    - only multiple terms in a query
+    "capricious person"
+        put more attention on first word
+
+Collection frequency of t
+number of occurrence in the collection
+
+word      | collection frequency | document frequency
+insurance | 10 440 | 3 997
+try       | 10 422 | 8 760
+
+when try occurs in the document it occurs once
+insurance tends to occur two or three times
+
+give higher weighting to words insurance appearing
+"try to buy insurance"
+    the most important word, desc
+        - insurance
+        - buy
+        - try
+and it is not captured by collection frequency
+
+TF IDF Weighting, tf x idf
+
+W = (1 + log tf) x log10 (N / df)
+
+Where N is the size of full corpus, number of documents (titles)
+
+increased wth the number of times the term occurs in document
+goes up with the rarety of the term
+
+score of query = SUM terms tf.idf
+
+The Vector Space Model ----------
+- We have a V dimensional vector space
+- Terms are axes of the space
+- Documents are points of vectors in this space
+- Very high-dimensional
+- They are sparse vectors
+
+How do we handle queries?
+- Represent vector as a vector in the space
+- Rank documents acc to their proximity, similarity
+more similar, higher
+- distance btw points
+    - Euclidean not optimal because large for different
+    in terms of information retrieval model
+    - use angle (cosine of angle) in vector space
+        rank in decreasing angle
+        rank in inc for cosine of angle
+
+- Length of the vector
+sqrt root of sum of sqrts
+- Divide a vector by its L norm , normalize
+- only do for the intersection for query and document
+
+Comment for th example in Cos similarity
+- some term frequencies a diff
+
+SMART notation
+    ddd.qqq
+    document scheme . query
+    lnc.ltc
+
+    Document
+        l - logarithmic tf
+        n - no idf and
+        c - no cosine normalisation
+
+    Query
+        l - logarithmic tf
+            only makes a diff if long query
+            with words mentioned more than once
+        t - idf
+        c - cosine normalisation
+Return first 10 documents, and more upon users request
+
+
+Measures for a search engine
+- how fast does it index
+    -- n of docs per hour
+    -- average doc size
+- how fast does it search
+- expressiveness
+- uncluttered UI
+
+Score of goodness
+
+user happiness
+    - what is this
+    - speed of response
+    - relevance of results to users info need
+
+We are not asking if documents have those words
+but does it address users query
+
+Evaluation
+    - benchmark document collection
+    - set of queries
+    - judgments of whether docs are relevant to queries
+
+Can use Precision, Recall and F score
+normally only few docs would be relevant
+
+Ranked results
+    - cannot use straightforward for recall, precision and f
+    - look at the initial subset of results
+    - precision, recall curve
+
+Mean Average precision MAP
+    precision at each point
+
+
+References
+
+7 2 Term Document Incidence Matrices 8 59
+https://www.youtube.com/watch?v=e81nC0LO0A8&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=34
+
+7 3 The Inverted Index 10 42
+https://www.youtube.com/watch?v=Wf6HbY2PQDw&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=35
+
+7 4 Query Processing with the Inverted IndexQuery Processing with the Inverted Index
+https://www.youtube.com/watch?v=5KbynCj7yRQ&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=36
+
+7 5 The Boolean Retrieval Model 14 06
+https://www.youtube.com/watch?v=TIN_02pJU-Y&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=37
+
+7 6 Phrase Queries and Positional Indexes 19 45
+https://www.youtube.com/watch?v=QVVvx_Csd2I&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=38
+
+8 1 Introducing Ranked Retrieval 4 27
+https://www.youtube.com/watch?v=ZrNmCtSrL48&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=39
+
+8 2 Scoring with the Jaccard Coefficient 5 06
+https://www.youtube.com/watch?v=MiX8_JVP6PE&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=40
+
+8 3 Term Frequency Weighting 5 59
+https://www.youtube.com/watch?v=9UXM2NXVYY0&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=41
+
+8 4 Inverse Document Frequency Weighting 10 16
+https://www.youtube.com/watch?v=7nWlI_TVid0&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=42
+
+8 5 TF IDF Weighting 3 42
+https://www.youtube.com/watch?v=4-P3ckZprBk&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=43
+
+8 6 The Vector Space Model 16 22
+https://www.youtube.com/watch?v=o5nflzfX5tw&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=44
+
+8 7 Calculating TF IDF Cosine Scores 12 47
+https://www.youtube.com/watch?v=k1tD7pYKWuM&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=45
+
+8 8 Evaluating Search Engines 9 02
+https://www.youtube.com/watch?v=b7pfLpVBN84&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=46
