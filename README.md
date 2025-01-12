@@ -39,10 +39,13 @@ Multi-label text classification using The Reuters-21578 dataset.
 **NLP 02 Logistic Regression Sentiment**<br>
 Logistic regression for simplified sentiment analysis.
 
+**NLP 02 TF IDF**<br>
+Information Retrieval: tf.idf, evaluate search engines.
+
 ## Naming convention
-Code : NLP for Natural Language Processing<br>
-01 : difficulty of the concept<br>
-Description : high level description<br>
+Code: NLP for Natural Language Processing<br>
+01: difficulty of the concept<br>
+Description: high level description<br>
 
 ## License
 Distributed under the MIT License. See [LICENSE](https://github.com/irini-git/projects/blob/main/LICENSE) for more information.
