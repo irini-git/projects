@@ -1,0 +1,248 @@
+Named Entity Recognition
+
+Named Entity is anything that can be referred to as a proper name
+    proper name is a full phrase, 4 tags most commeon
+    PER (person) Marie Curie
+    LOC (location) New York City
+    GPE (geo-political entity) Boulder, Colorado
+also extended to
+    dates, times, prices
+
+Task : find and tag the type / NER Named Entity Tagging, it is a first step in
+    - sentiment analysis
+    - question answering
+    - information extraction
+
+Why NER is had
+1. Segmentation : find a span of text, and where the boundaries are
+2. Type ambiguity, e.g. Washington : location, name?
+
+BIO tagging
+    B : token that begins a span
+    I : token inside a span
+    O : tokens outside of any span
+
+Variance
+    IO labels (no B)
+    BIO labels
+    BIOES : begin, inside or end of span
+
+Words classes, PoS tags
+       - noun : houses, cat, Anna
+            concrete or abstract
+            proper or common
+        - verb : play, write
+            main (eat)
+            auxiliary (can)
+        (- adhectives : property)
+        - pronoun : he, she, it / closed
+        - preprostion : by, in
+        - adverb : carefully
+        - conjunction : and, but / closed
+        (- determiners : the some / closed)
+        (- prepositions : to with / closed)
+        - particles : off up / closed
+        - article : a, an, the
+        (- numbers : 0, one)
+
+        q : no adjective?
+
+Closed class words
+    - relatively fixed membership
+    - prepositions : new are rarely coined
+    - usually function words
+
+Open class words
+    - nouns > new like iPhone
+    - usually content words : nouns, verbs, adjectives
+        adverbs
+        plus intersections > oh, ouch..
+
+Part-of-Speech Tagging
+    roughly 15% are ambiguous, very common
+    around 60% of word tokens are ambiguous
+
+- prior probability : of 'will' is usually AUX
+- identity of neighbouring words : 'the' means the next word is probably not a verb
+- morphology and word shape : un - > ADJ
+
+Words vary along 3 affective dimensions (NRC VAD lexicon)
+    - valence : the pleasantness of the stimulus
+    - arousal : the intensity of emotion provoked by stimulus
+    - dominance : the degree of control exerted by the stimulus
+
+3 affective dimensions for a word
+    - a point in space
+    - each word is a vector
+    - similar words are near
+
+   embedding (vectors) - to represent a word meaning
+
+Why vectors? - we can generalize to similar but unseen words
+
+tf-idf
+    - sparse
+    - a common baseline model
+    - words are represented by the counts of nearby vectors
+
+Word2vec
+    - dense
+    - representation created by training to predict if the word is likely to appear
+    - contextual embedding
+
+Word-word matrix (or term context matrix)
+two words are similar in meaning if their context vectors are similar
+    - n of times appear in the same document
+    - (smaller scale) some n to the right and to the left
+        plus or minis forward 4 words window
+
+Cosine of the angle btw two vectors
+- dot product (inner product)
+- dot product tends to be high when the two vectors have
+large values in the same dimensions
+
+- favors long vectors
+    - higher when vector is longer
+    - normalize by dividing by the length
+
+It is the cos of the angle btw
+   from 1 (vectors pointng to same direction)
+   to -1 (opposite),
+   frequencies are not negative, so cos is from 0 to 1
+
+Raw frequency is bad
+    - tf idf / when dimensions are documents
+        w = tf * idf
+
+        tf - term frequency, not raw
+        tf = log10(count (t,d) + 1)
+        adding 1 because cannot take a log of zero
+
+        df - number of documents where t occurs.
+        collection frequency - how many times occurs
+            in the entre collection, Romeo : 113
+        document frequency - in how many documents
+            Romeo : 1
+
+        idf = log10(N/df), N / total number of docs
+            in the collection
+            df / number of docs where the word occurs
+
+        idf - inverse document frequency to down weight
+            words like 'the' or 'it'
+
+    - PMI / point wise mutual information
+        when dimensions are words
+        PMI (w1, w2) = log ( p(w1,w2) / p(w1) p(w2))
+        compares the probabilities we see with
+        what we would have expected
+
+What is a document?
+    - anything, like paragraph
+
+Word2vec
+    embeddings, short dense vectors
+    tf-idf (or PMI) vectors are
+        long (length |V| = 20,000 to 50,000)
+        sparse (most elements are zero)
+
+    learn vectors which are
+        short (length 50-1000)
+        dense (most elements are non zero)
+
+dense vector works better than sparse
+    - classifier learn / tune fewer weights
+    - may generalize better
+    - capture synonymy better
+
+Compute Word2vec using skipgram / static embedding
+    also referred as word2vec
+
+Dynamic embedding / diff in diff context
+
+approach : predict if candidate word c is a neighbor
+1. treat the target word t and a neighbouring context word c as positive examples
+2. randomly sample other words in the lexicon to get negative examples
+3. use logistic regression to distinguish cases
+4. use the learned weights as embedding of words
+
+Similarity(w,c) apr. w*c
+use sigma to probability, need to normalize to turn
+the similarity (numbers, potentially negative) to
+probability
+
+P(+|w,c) = sigma (c*w) = 1 / (1 + exp (-c*w))
+P(-|w,c) = 1 - P(+|w,c) = sigma (-c*w) = 1 / (1 + exp (c*w))
+
+P(+|w,c) : c is a context word
+
+Skip-gram assumption
+    all context words are independent
+    the probability to multiply
+
+    P(+|w,c1:L) = MULT sigma (ci * w)
+    log P(+|w,c1:L) = MULT log sigma (ci * w)
+
+Skipgram
+    - a probabilistic classifier, given
+    a test target word w
+    its context window of L words c1:L
+
+    - estimates probability that w occurs in
+    this window based on similarity of w
+    (embeddings) to c1:L embeddings()
+
+    need embedding for all words in vocabulary
+
+store two embeddings
+    - W target words
+    - C context words
+
+For each positive example, we will use k negative examples.
+    noise word - a random word from the lexicon that is not a target word w
+
+Small window (c = +-2 ) nearest words are syntactically similar
+Large windows (c = +-5) words in the same semantic field
+
+java -mx3g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLP
+
+https://github.com/nltk/nltk/wiki/Stanford-CoreNLP-API-in-NLTK
+https://www.khalidalnajjar.com/setup-use-stanford-corenlp-server-python/
+
+Introduction to Named Entity Tagging
+https://www.youtube.com/watch?v=7CRyqwCZFY0&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=47
+
+Introduction to Part of Speech Tagging
+https://www.youtube.com/watch?v=WQYt3DRLpuQ&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=48
+
+Vector 1 Word Meaning
+https://www.youtube.com/watch?v=EsfNYiLVtHI&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=49
+
+Vector 2 Vector Semantics
+https://www.youtube.com/watch?v=lrPxo-92GC0&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=50
+
+Vector 3 Words and Vectors
+https://www.youtube.com/watch?v=xtD47WHNhxk&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=51
+
+Vector 4 Cosine Similarity
+https://www.youtube.com/watch?v=-_i9Cg81rXA&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=52
+
+Vector 5 TF IDF
+https://www.youtube.com/watch?v=TBUpxFw8oIA&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=53
+
+Vector 6 Word2vec
+https://www.youtube.com/watch?v=FHhKmf1iPvw&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=54
+
+Vector 7 Learning in Word2vec
+https://www.youtube.com/watch?v=MGhVvEwFB9o&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=55
+
+Vector 8 Properties of Embeddings
+https://www.youtube.com/watch?v=QvFNqBRaCis&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=56
+
+Tutorial: Build your own Skip-gram Embeddings and use them in a Neural Network
+https://blog.cambridgespark.com/tutorial-build-your-own-embedding-and-use-it-in-a-neural-network-e9cde4a81296
+
+
+SimLex-999
+https://fh295.github.io/simlex.html
+SimLex-999: Evaluating Semantic Models with (Genuine) Similarity Estimation. 2014. Felix Hill, Roi Reichart and Anna Korhonen. Computational Linguistics. 2015
