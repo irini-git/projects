@@ -42,6 +42,9 @@ Logistic regression for simplified sentiment analysis.
 **NLP 02 TF IDF**<br>
 Information Retrieval: tf.idf, evaluate search engines.
 
+**NLP 02 Vector**<br>
+Words and vectors.
+
 ## Naming convention
 Code: NLP for Natural Language Processing<br>
 01: difficulty of the concept<br>
