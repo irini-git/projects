@@ -45,6 +45,9 @@ Information Retrieval: tf.idf, evaluate search engines.
 **NLP 02 Vector**<br>
 Words and vectors.
 
+**NLP 03 Neural Networks**<br>
+Neural Networks.
+
 ## Naming convention
 Code: NLP for Natural Language Processing<br>
 01: difficulty of the concept<br>
