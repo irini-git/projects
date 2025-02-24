@@ -1,0 +1,7 @@
+seaborn
+matplotlib
+vega_datasets
+scikit-learn
+keras
+unidecode
+tensorflow

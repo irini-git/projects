@@ -1,0 +1,279 @@
+
+Neural is historical
+    - a network of small computing units,
+    each of which takes a vector input values
+    and produces a single output value
+
+    - often called deep (have layers)
+
+Unit
+    - takes a set of real values as input
+    - performs some computations combining weights and biases
+    - in a non-linear transform, and
+    - produces an output
+
+Neural unit
+    - take weighted sum of inputs, plus a bias
+
+    z = b + SUM w_i x_i
+    z = w * x + b
+
+Instead of just using z, we'll apply a nonlinear activation function f
+refer as the activation value for the unit
+
+    y = a = f(z)
+
+For a single unit, the activation in the output.
+
+Non-linear activation functions
+    - sigmoid for logistic regression
+    y = sigma(z) = 1 / (1 + e^-z)
+
+Final function the unit is computing
+y = sigma (w*x + b) = 1 / (1 + exp (-w*x + b))
+
+Tanh function is better than sigmoid
+    zero derivatives -> error gets smaller and smaller and diff to learn
+    vanish derivative problem
+
+The most common :
+    ReLU - rectified Linear Unit
+    very close to linear
+
+Feed forward network MLP
+    - multi layer network in which the units are connected with no cycles
+    - no output is passed to lower networks
+
+Nodes
+    input units
+    hidden units
+    output units
+
+Binary logist regression is a one layer network
+    input layer is layer zero
+    output layer y = sigma (x*w +b)
+
+Multinomial
+    softmax turns to probabilities
+    softmax is a generalization of sigma
+
+Two -layer network
+    One output
+    - input x, multiplies by w and adds a bias
+    - hidden unit, sigma (Wx + b) could be ReLU
+    - output , compute a output
+      eliminate bias in the example
+      z = Uh, intermediate
+      y = sigma(z) produces probability
+
+    Multi output
+    add more output units, each for a part of speech
+    y = softmax(z)
+
+Neural network
+    is like logistic regression but with many layers
+    features not designed by hand
+
+Notation
+    W[1] - weight for the first super layer
+    b[2] - bias for the second super layer
+    g[1] - activation function
+        ReLU for intermediate layer
+        sigmoid or softmax for output
+
+    a[1] - output of layer 1
+    z[1] - combination of weights and biases
+    a[0] - input layer
+
+Example for 2 layers
+
+y = a[2]
+a[2]=g[2](z[2]) sigmoid or softmax
+z[2]=W[2]a[1] + b[2]
+
+a[1]=g[1](z[1]) ReLU
+z[1]=W[1]a[0] + b[1]
+
+Replacing the bias unit
+    - add a dummy node a_0[0] = 1
+
+instead of
+x = x1,x2,..., xn0 -> x = x0, x1, x2, ..., xn0
+h = sigma(Wx + b) -> h = sigma(Wx)
+
+That is a simplified notation without a bias term.
+
+Use cases for feedforward network
+1. Text classification (like sentiment classification)
+2. Language modeling (n-grams)
+
+
+Classification : Sentiment Analysis
+    - input layer and binary feature as before
+    - output layer is 0 or 1
+    - the only difference is extra layer
+
+Sentiment features (standard features for sentiment analysis)
+Var | Definition
+x1  | count (positive lexicon) in doc
+x2  | count (negative lexicon) in doc
+x3  | 1 if "no" in doc, 0 otherwise
+x4  | count (1st and 2nd pronouns) in doc
+x5  | 1 if "!" in doc, 0 otherwise
+x6  | log (word count of doc)
+
+Logistic regression -> add an extra hidden layer
+    - allows the network to model the interaction btw features
+    - which may (or not) improve the performance
+
+Even better : learn features from data
+    - instead of using hand-built human-engineered features for classification
+    - use learned representations like embeddings
+
+Issue : text comes in different size
+    - but always expected as a predefined
+
+Solutions :
+    - make the input the length of longest review
+    and pad with zero embeddings if shorter or
+    truncate if get longer in the test time
+
+    - create a single sentence embedding
+    to represent all the words
+        - take the mean of all word embeddings
+        - take the element-wise max of all word embeddings
+
+Multi-class output (more than 2, e.g. positive, negative, neutral)
+    - add more output units (one for each class)
+    - use softmax layer
+
+
+How do we train neural networks?
+    - forward computation of the loss and
+    - backward computation of weight updates
+
+    x1 ... xn - training instance
+    y_hat - system output
+    y - actual answer
+    loss function - compare true value y with computed y
+    backward to get graduants we need
+
+    For every training tuple(x,y)
+        - run forward computation to find our estimate y_hat
+        - run backward computation to update weights
+            - for every output node
+                - compute loss L between tru y and estimated y_hat
+                - for every weight w from hidden layer to the output layer
+                    - update the weight
+            - next : for every hidden node
+                - assess how much blame it deserves for the current asnwer
+                - for every weight w from input layer to the hidden layer
+                    - update the weight
+
+
+Loss Function for binary logistic regression
+A measure for how far off the current answer is to the right answer
+cross entropy loss for logistic regression
+
+L_CE(y_hat, y) =
+    = - log p (y | x) =
+    = - [y log y_hat + (1-y) log (1-y_hat)] =
+    = - [y log sigma (w*x + b) + (1-y) log (1- sigma (w*x + b))]
+
+How gradient descent works for weight update
+    - use the derivative of the loss functon with respect to weights
+    d\dw L (f(x;w), y)
+    - to tell us how to adjust weights for each training item
+        - move them in opposite direction of the gradient
+
+        w^(t+1) = w^t - eta (d/dw) L (f(x;w),y)
+
+        eta - learning rate
+        higher learning rate means we should move more
+
+    - for logistic regression
+        dL_CE(y_hat, y) / dw_j =
+            = [sigma (wx + b) - y] x_j
+
+    This derivative comes from chain rule
+
+    dL / dw_i = dL/dy dy/dz dz/sw
+
+    derivative of loss
+    derivative of activation
+    derivative of weighted sum
+
+Updates for one layer, what about deeper networks
+    with different activation function? back propagation
+
+computation graphs - process of computing a mathematical expression
+    backward pass - derivatives for the weight update
+
+Ex. L (a,b,c) = c(a+2b)
+    computations : d = 2*b
+                    e = a + d
+                    L = c * e
+
+Ex. we want dL/da, dL/db, dL/dc
+    the derivative dL/da tells us how much a small change n a affects L
+
+Chain rule - computing the derivative of a composite function
+
+Ex.
+    L = c * e, dL/dc = e               : e
+    e = a+d, dL/da = dL/de * de/da     : c * 1
+    d = 2b, dL/db = dL/de * de/dd * dd/db : c * 1 *2
+
+f(x) = u(v(x)) : df/dx = du/dv dv/dx
+
+z[1] = W[1]x +b[1]
+a[1] = ReLU(z[1])
+z[2] = W[2]a[1] + b[2]
+a[2] = sigma(z[2])
+y_hat = a[2]
+
+d sigma (z) / dz =
+    = sigma(z)(1 - sigma (z))
+
+d ReLU (z) / dz =
+    = 0 for z < 0,
+    = 1 fpr z >= 0
+
+
+Ex. for last
+   L (y_hat, y) = - (y log (y_hat) + (1-y)log(1-y_hat))
+   L (a, y) =  (y log a + (1-y)log(1-a))
+
+   dL / dz = dL/da da/dz
+
+   dL/da = -((y dlog(a)/da + (1-y) d log(1-a)/da)) =
+         = - ( (y 1/a) + (1-y) (1/(1-a))(-1)) =
+         = - (y/a + (y-1)/(1-a))
+
+   a = sigma (z)
+   da/dz = a(1-a)
+
+   dL/dz = a -y
+
+Compute the derivative of the loss in respect to early weights
+
+
+References
+Neural Networks 1 Neural Units
+https://www.youtube.com/watch?v=BtmsIy0j_dY&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=57
+
+Neural Networks 2 XOR
+https://www.youtube.com/watch?v=s7nRWh_3BtA&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=58
+
+Neural Networks 3 Feedforward Neural Networks
+https://www.youtube.com/watch?v=RMvTgWl6xog&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=59
+
+Neural Networks 4 Applying Feedforward Networks to NLP
+https://www.youtube.com/watch?v=y88qwovkBws&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=60
+
+Neural Networks 5 Overview of Training
+https://www.youtube.com/watch?v=IOS6y6nQKWM&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=61
+
+Neural Networks 6 Computation Graphs and Backward Differentiation
+https://www.youtube.com/watch?v=hM74RH82LyI&list=PLaZQkZp6WhWyvdiP49JG-rjyTPck_hvEu&index=62
+
